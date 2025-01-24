@@ -51,9 +51,9 @@ fun main() {
     // 7. Write a when statement that prints whether there are more cats than 
     // dogs, more dogs than cats, are there are the same number of each.
 
-    // 8. Use when to determine if a character is a vowel or consonant and
-    // print the result. Char has methods named lowerCaseChar() and
-    // upperCaseChar() you can use, or you can assume upper/lowercase
+    // 8. Use a when statement to determine if a character is a vowel or 
+    // consonant and print the result. Char has methods named lowerCaseChar()
+    // and upperCaseChar() you can use, or you can assume upper/lowercase
 
     // 9. Use a for loop to print the numbers 0 to 9 in reverse order. Hint -
     // there is a downTo keyword
@@ -68,7 +68,6 @@ fun main() {
 
     // 12. Remove your most and least favorite from the combined list, and print
     // this new list. (You may need to modify what you did for 10 and 11)
-
 
     // 13. Create a string variable and set it to null, then print the string
 
