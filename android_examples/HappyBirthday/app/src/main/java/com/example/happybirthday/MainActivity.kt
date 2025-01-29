@@ -42,9 +42,12 @@ fun GreetingText(
     from: String,
     modifier: Modifier = Modifier
 ) {
+    // Column places elements vertically
+    // the things we want to be in the column go in between
+    // the curly braces right after the parentheses
     // since Column is the parent element, we pass the modifier on to it
     Column(modifier = modifier)
-    {
+    {// stuff in here will be drawn in the column
         // text to display the happy birthday message
         Text(
             text = message,
