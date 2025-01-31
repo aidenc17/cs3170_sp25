@@ -5,10 +5,12 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
@@ -18,7 +20,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -33,9 +37,9 @@ class MainActivity : ComponentActivity() {
             HappyBirthdayTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                 // you might have red squiggles under innerPadding, it shouldn't be an issue
-                    GreetingText(
-                        message = "Happy Birthday Paris!",
-                        from = "From James",
+                    GreetingImage(
+                        message = stringResource(R.string.happy_birthday_message),
+                        from = stringResource(R.string.from),
                         modifier = Modifier
                             .padding(innerPadding)
                     )
@@ -60,7 +64,7 @@ fun GreetingText(
     // the curly braces right after the parentheses
     // since Column is the parent element, we pass the modifier on to it
     Column(
-        verticalArrangement = Arrangement.Center, // things will be centered within the Column
+        verticalArrangement = Arrangement.Top, // things will be centered within the Column
                                                     // this does not specify where the Column goes in relation to its parent
         modifier = modifier.padding(8.dp))
     {// stuff in here will be drawn in the column
@@ -77,12 +81,11 @@ fun GreetingText(
             fontSize = 36.sp,
             //textAlign = TextAlign.Right,
             modifier = Modifier
+                .border(width = 1.dp, color = Color.Blue)
                 .padding(16.dp)
                 .align(alignment = Alignment.End) // this align moves the text box to the End (Right)
-
         )
     }
-
 }
 
 @Composable
@@ -101,12 +104,18 @@ fun GreetingImage(
             painter = image,
             // contentDescription is required for images for accessibility purposes
             // for assignments you can pass null, or give a string if you wish
-            contentDescription = "A dog"
+            contentDescription = "A dog",
+            // this site has some info on content scale
+            // https://developer.android.com/develop/ui/compose/graphics/images/customize
+            contentScale = ContentScale.Crop,
+            // alpha is how transparent, 1 = non-transparent 0 = fully transparent
+            alpha = 0.5f
         )
 
         GreetingText(
             message = message,
             from = from,
+            modifier = Modifier.fillMaxSize()
         )
     }
 }
@@ -116,8 +125,9 @@ fun GreetingImage(
 fun BirthdayCardPreview() {
     HappyBirthdayTheme {
         GreetingImage(
-            message = "Happy Birthday James!",
-            from = "From Paris",
+            // string resources are in res/values/strings.xml
+            message = stringResource(R.string.happy_birthday_message),
+            from = stringResource(R.string.from),
         )
     }
 }
