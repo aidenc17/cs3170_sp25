@@ -2,4 +2,7 @@
     <string name="app_name">BusinessCard</string>
     <string name="my_name">James Anderson</string>
     <string name="my_title">Computer Science Instructor</string>
+    <string name="phone">123-456-7890</string>
+    <string name="social">drinkbird</string>
+    <string name="email">james.anderson@wright.edu</string>
 </resources>
