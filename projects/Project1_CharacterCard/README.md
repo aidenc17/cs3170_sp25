@@ -1,4 +1,4 @@
-# Project 0 - Character Card
+# Project 1 - Character Card
 
 ### Learning Objectives
 - Become familiar with the Android Studio programming environment
