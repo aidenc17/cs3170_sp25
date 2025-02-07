@@ -41,7 +41,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             BusinessCardTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    BusinessCardApp(modifier = Modifier.padding(innerPadding))
+                    BusinessCardApp(modifier = Modifier.padding(innerPadding).fillMaxSize())
                 }
             }
         }
