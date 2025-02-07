@@ -5,7 +5,7 @@
 - Apply basic hierarchical layout concepts to arrange GUI components
 
 ### Overview
-For Project 0, we will be using Android Studio to make an app that shows a character card, similar to cards for Magic: the Gathering or Pokemon TCG. We will use hierarchical containers to arrange the elements on the screen. Your app will contain both text and images, as well as any other visuals you wish to add. 
+For Project 1, we will be using Android Studio to make an app that shows a character card, similar to cards for Magic: the Gathering or Pokemon TCG. We will use hierarchical containers to arrange the elements on the screen. Your app will contain both text and images, as well as any other visuals you wish to add. 
 
 ### Program Operation
 You are free to add to these requirements, but app should consist of at least 3 or 4 `@Composable` functions. You can name them whatever makes sense, but here are some suggestions:
