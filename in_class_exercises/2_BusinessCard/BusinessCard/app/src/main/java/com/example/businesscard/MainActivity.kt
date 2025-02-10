@@ -41,7 +41,9 @@ class MainActivity : ComponentActivity() {
         setContent {
             BusinessCardTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    BusinessCardApp(modifier = Modifier.padding(innerPadding).fillMaxSize())
+                    BusinessCardApp(modifier = Modifier
+                        .padding(innerPadding))
+                        //.fillMaxSize())
                 }
             }
         }
@@ -50,6 +52,8 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun LogoNameTitle(
+    name: String,
+    title: String,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -66,10 +70,11 @@ fun LogoNameTitle(
                     //.padding(46.dp)
             )
         }
-        Text(stringResource(R.string.my_name),
+        Text(text = name,
             fontSize = 50.sp,
             textAlign = TextAlign.Center)
-        Text(stringResource(R.string.my_title),
+        Text(
+            text = title,
             fontSize = 20.sp,
             textAlign = TextAlign.Center,
             //modifier = Modifier.absoluteOffset(y=-20.dp)
@@ -103,21 +108,18 @@ fun ContactInfo(
                 tint = Color.Magenta,
                 contentDescription = "",
                 modifier = Modifier.padding(end = 8.dp)
-
             )
             Text(
                 text = stringResource(R.string.social),
                 color = Color.Magenta
             )
         }
-
         Row () {
             Icon(
                 painter = painterResource(R.drawable.twotone_email_24),
                 tint = Color.Yellow,
                 contentDescription = "",
                 modifier = Modifier.padding(end = 8.dp)
-
             )
             Text(
                 text = stringResource(R.string.email),
@@ -137,7 +139,10 @@ fun BusinessCardApp(
         modifier = modifier
             .background(color = Color.DarkGray)
     ) {
-        LogoNameTitle()
+        LogoNameTitle(
+            name = stringResource(R.string.my_name),
+            title = stringResource(R.string.my_title)
+        )
         Spacer(
             modifier = Modifier.padding(32.dp)
         )
