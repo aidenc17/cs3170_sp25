@@ -71,7 +71,7 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun TipCalculatorApp() {
     var amountInput by remember { mutableStateOf("") }
-    var tipInput by remember { mutableStateOf("15") }
+    var tipInput by remember { mutableStateOf("") }
     var roundUpInput by remember { mutableStateOf(false) }
 
     val amount = amountInput.toDoubleOrNull() ?: 0.0
