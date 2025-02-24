@@ -20,8 +20,10 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.annotation.StringRes
+import androidx.annotation.VisibleForTesting
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -32,6 +34,7 @@ import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
@@ -42,6 +45,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -68,9 +72,11 @@ class MainActivity : ComponentActivity() {
 fun TipCalculatorApp() {
     var amountInput by remember { mutableStateOf("") }
     var tipInput by remember { mutableStateOf("15") }
+    var roundUpInput by remember { mutableStateOf(false) }
+
     val amount = amountInput.toDoubleOrNull() ?: 0.0
     val tipPercent = tipInput.toDoubleOrNull() ?: 0.0
-    val tipAmount = calculateTip(amount, tipPercent)
+    val tipAmount = calculateTip(amount, tipPercent, roundUpInput)
 
     Column(
         modifier = Modifier
@@ -89,8 +95,12 @@ fun TipCalculatorApp() {
         // bill amount text field
         EditNumberField(
             value = amountInput,
-            onValueChange = {amountInput = it},
+            onValueChange = { amountInput = it },
             labelID = R.string.bill_amount,
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Number,
+                imeAction = ImeAction.Next
+            ),
             modifier = Modifier
                 .padding(bottom = 32.dp)
                 .fillMaxWidth()
@@ -98,10 +108,20 @@ fun TipCalculatorApp() {
         // tip percent text field
         EditNumberField(
             value = tipInput,
-            onValueChange = {tipInput = it},
+            onValueChange = { tipInput = it },
             R.string.how_was_the_service,
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Number,
+                imeAction = ImeAction.Done
+            ),
             modifier = Modifier
                 .padding(bottom = 32.dp)
+                .fillMaxWidth()
+        )
+        RoundTheTipRow(
+            checked = roundUpInput,
+            onCheckedChange = {roundUpInput = it},
+            modifier = Modifier
                 .fillMaxWidth()
         )
         Text(
@@ -117,16 +137,37 @@ fun EditNumberField(
     value: String,
     onValueChange: (String) -> Unit,
     @StringRes labelID: Int,
+    keyboardOptions: KeyboardOptions,
     modifier: Modifier = Modifier
 ) {
     TextField(
         value = value,
         onValueChange = onValueChange,
         singleLine = true,
-        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+        keyboardOptions = keyboardOptions,
         label = { Text(text = stringResource(id = labelID)) },
         modifier = modifier
     )
+}
+
+@Composable
+fun RoundTheTipRow(
+    checked: Boolean,
+    onCheckedChange: (Boolean) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Row(
+        modifier = modifier,
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    )
+    {
+        Text(text = stringResource(id = R.string.round_up_tip))
+        Switch(
+            checked = checked,
+            onCheckedChange = onCheckedChange
+        )
+    }
 }
 
 /**
@@ -134,8 +175,12 @@ fun EditNumberField(
  * according to the local currency.
  * Example would be "$10.00".
  */
-private fun calculateTip(amount: Double, tipPercent: Double = 15.0): String {
-    val tip = tipPercent / 100 * amount
+@VisibleForTesting
+internal fun calculateTip(amount: Double, tipPercent: Double = 15.0, roundUp: Boolean = false): String {
+    var tip = tipPercent / 100 * amount
+    if (roundUp) {
+        tip = Math.ceil(tip)
+    }
     return NumberFormat.getCurrencyInstance().format(tip)
 }
 
