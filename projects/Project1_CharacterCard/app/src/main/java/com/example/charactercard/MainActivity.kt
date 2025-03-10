@@ -16,11 +16,6 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.ThumbUp
-import androidx.compose.material.icons.rounded.ThumbUp
-import androidx.compose.material.icons.twotone.ThumbUp
-import androidx.compose.material.icons.twotone.Warning
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -28,8 +23,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.input.pointer.motionEventSpy
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.integerResource
@@ -57,14 +50,7 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun CharacterCardApp(modifier: Modifier = Modifier) {
     CardImage(
-        cardTitle = stringResource(R.string.cardtitle),
-        castingCost = integerResource(id = R.integer.castingCost),
-        borderColorId = R.color.borderColor,
-        cardImageId = R.drawable.drinky,
-        cardType = stringResource(R.string.cardType),
-        cardText = stringResource(R.string.cardtext),
-        powerStat = integerResource(id = R.integer.powerStat),
-        toughnessStat = integerResource(id = R.integer.toughnessStat),
+        CharacterInfo.myCharater,
         modifier = modifier
     )
 }
@@ -102,7 +88,6 @@ fun TitleCost(
                 //Icons.TwoTone.Warning, ""
             )
         }
-
     }
 }
 
@@ -142,57 +127,51 @@ fun CardTextStats(
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .background(colorResource(id =  R.color.white))
+            .background(colorResource(id = R.color.white))
             .border(BorderStroke(1.dp, Color.Black))
     ) {
-        Text (
+        Text(
             text = cardText,
             modifier = Modifier
-                .padding(start =  8.dp)
+                .padding(start = 8.dp)
         )
         Row(
             horizontalArrangement = Arrangement.End,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(4.dp)) {
-        Text(
-            text = "$power/$toughness",
-            //textAlign = TextAlign.End
-        ) }
+                .padding(4.dp)
+        ) {
+            Text(
+                text = "$power/$toughness",
+                //textAlign = TextAlign.End
+            )
+        }
     }
 }
 
 
-
 @Composable
 fun CardImage(
-    cardTitle: String,
-    castingCost: Int,
-    borderColorId: Int,
-    cardImageId: Int,
-    cardType: String,
-    cardText: String,
-    powerStat: Int,
-    toughnessStat: Int,
+    characterData: CharacterData,
     modifier: Modifier = Modifier
-    ) {
+) {
 
     Column(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = modifier
-            .background(colorResource(id = borderColorId))
+            .background(colorResource(id = characterData.borderColorId))
             .fillMaxHeight()
     ) {
         TitleCost(
-            title = cardTitle,
-            cost = castingCost,
+            title = stringResource(characterData.cardTitle),
+            cost = characterData.castingCost,
             modifier = Modifier
                 .padding(8.dp)
         )
 
         Image(
-            painter = painterResource(id = cardImageId),
+            painter = painterResource(id = characterData.cardImageId),
             contentDescription = null,
             contentScale = ContentScale.FillWidth,
 
@@ -204,17 +183,18 @@ fun CardImage(
         )
 
         CardType(
-            type = cardType,
+            type = stringResource(characterData.cardType),
             modifier = Modifier
                 .padding(8.dp)
         )
 
         CardTextStats(
-            cardText = cardText,
-            power = powerStat,
-            toughness = toughnessStat,
+            cardText = stringResource(characterData.cardText),
+            power = integerResource(characterData.powerStat),
+            toughness = integerResource(characterData.toughnessStat),
             modifier = Modifier
-                .padding(8.dp))
+                .padding(8.dp)
+        )
     }
 }
 
@@ -222,15 +202,6 @@ fun CardImage(
 @Composable
 fun GreetingPreview() {
     CharacterCardTheme {
-        CardImage(
-            cardTitle = stringResource(R.string.cardtitle),
-            castingCost = integerResource(id = R.integer.castingCost),
-            borderColorId = R.color.borderColor,
-            cardImageId = R.drawable.drinky,
-            cardType = stringResource(R.string.cardType),
-            cardText = stringResource(R.string.cardtext),
-            powerStat = integerResource(id = R.integer.powerStat),
-            toughnessStat = integerResource(id = R.integer.toughnessStat)
-        )
-            }
+        CharacterCardApp(modifier = Modifier.fillMaxSize())
+    }
 }

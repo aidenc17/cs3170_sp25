@@ -52,22 +52,23 @@ fun ColorChooserApp(
     val colorMap = mapOf(
         "Blue" to Color.Blue,
         "Red" to Color.Red,
-        "Green" to Color.Green
+        "Green" to Color.Green,
+        "Magenta" to Color.Magenta
     )
 
-    val colorsList = listOf("Blue", "Red", "Green")
+    //val colorsList = listOf("Blue", "Red", "Green")
     var currentColor by remember { mutableStateOf("") }
 
-    val backgroundColor = when (currentColor) {
-        "Blue" -> Color.Blue
-        "Red" -> Color.Red
-        "Green" -> Color.Green
-        else -> Color.Gray
-    }
+//    val backgroundColor = when (currentColor) {
+//        "Blue" -> Color.Blue
+//        "Red" -> Color.Red
+//        "Green" -> Color.Green
+//        else -> Color.Gray
+//    }
 
     Column(
         modifier = modifier
-            .background(color = backgroundColor)
+            .background(color = colorMap.getOrDefault(currentColor, Color.Unspecified))
             .fillMaxSize(),
         verticalArrangement = Arrangement.Center,
 
