@@ -16,17 +16,22 @@ val Eater = FontFamily(
 val CourierPrime = FontFamily(
     Font(R.font.courier_prime)
 )
+
+val Aclonica = FontFamily(
+    Font(R.font.aclonica)
+)
+
 // Set of Material typography styles to start with
 val Typography = Typography(
     bodyLarge = TextStyle(
         fontFamily = CourierPrime,
         fontWeight = FontWeight.Normal,
         fontSize = 16.sp,
-        lineHeight = 20.sp,
-        letterSpacing = 0.5.sp
+        lineHeight = 18.sp,
+        letterSpacing = 0.sp
     ),
     titleLarge = TextStyle(
-        fontFamily = Eater,
+        fontFamily = Aclonica,
         fontWeight = FontWeight.Normal,
         fontSize = 18.sp,
         lineHeight = 24.sp,
