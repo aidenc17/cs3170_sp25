@@ -15,6 +15,7 @@
  */
 package com.example.unscramble.ui
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -185,6 +186,7 @@ fun GameLayout(modifier: Modifier = Modifier) {
 /*
  * Creates and shows an AlertDialog with final score.
  */
+@SuppressLint("ContextCastToActivity")
 @Composable
 private fun FinalScoreDialog(
     score: Int,
