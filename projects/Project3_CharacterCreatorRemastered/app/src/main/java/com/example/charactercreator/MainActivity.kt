@@ -53,16 +53,16 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun CharacterCreatorApp(modifier: Modifier = Modifier) {
-    val useMap = true
+    //val useMap = true
     val MAX_STATS = 25
-    //var (statArray, setStats) = remember { mutableStateOf(Array<Int>(size = 4, init = { 0 })) }
+    //var (statArray, setStatArray) = remember { mutableStateOf(Array<Int>(size = 4, init = { 0 })) }
     var (statMap, setStatMap) = remember {
         (mutableStateOf(
             mutableMapOf(
                 "Stamina" to 0,
                 "Strength" to 0,
                 "Agility" to 0,
-                "Intellect" to 0
+                "Intellect" to 0,
             )
         ))
     }
@@ -105,9 +105,7 @@ fun CharacterCreatorApp(modifier: Modifier = Modifier) {
                         },
                     )
                 }
-
             }
-
         }
 
         Spacer(Modifier.padding(vertical = 8.dp))
@@ -137,7 +135,6 @@ fun AttributeList(
                 Text(text = "${attributeMap.getOrDefault(attribute, 0)}")
             }
         }
-
     }
 }
 
