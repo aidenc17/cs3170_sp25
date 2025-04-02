@@ -15,6 +15,7 @@
  */
 package com.example.cupcake
 
+import android.adservices.customaudience.CustomAudienceManager
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -41,6 +42,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.cupcake.data.DataSource
+import com.example.cupcake.ui.OrderSummaryScreen
 import com.example.cupcake.ui.OrderViewModel
 import com.example.cupcake.ui.SelectOptionScreen
 import com.example.cupcake.ui.StartOrderScreen
@@ -106,6 +108,10 @@ fun CupcakeApp(
                 // call StartOrderScreen composable
                 StartOrderScreen(
                     quantityOptions = DataSource.quantityOptions,
+                    onNextButtonClicked = { quantity ->
+                        viewModel.setQuantity(quantity)
+                        navController.navigate(route = CupcakeScreen.Flavor.name)
+                    },
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(dimensionResource(R.dimen.padding_medium))
@@ -119,12 +125,34 @@ fun CupcakeApp(
                 SelectOptionScreen(
                     subtotal = uiState.price,
                     options = DataSource.flavors.map{ id -> context.resources.getString(id)},
-                    onSelectionChanged = {viewModel.setFlavor(it)},
+                    onSelectionChanged = {flavor -> viewModel.setFlavor(flavor)},
+                    onNextButtonClicked = {navController.navigate(CupcakeScreen.Pickup.name)},
+                    onCancelButtonClicked = {navController.popBackStack(route = CupcakeScreen.Start.name, inclusive = false)},
                     modifier = Modifier.fillMaxHeight()
                 )
             }
 
+            // Pickup
+            composable(route = CupcakeScreen.Pickup.name) {
+                SelectOptionScreen(
+                    subtotal = uiState.price,
+                    options = uiState.pickupOptions,
+                    onSelectionChanged = {viewModel.setDate(it)},
+                    onNextButtonClicked = {navController.navigate(route = CupcakeScreen.Summary.name)},
+                    onCancelButtonClicked = {navController.popBackStack(route = CupcakeScreen.Start.name, inclusive = false)},
+                    modifier = Modifier.fillMaxHeight()
+                )
+            }
 
+            // Summary
+            composable(route = CupcakeScreen.Summary.name) {
+                OrderSummaryScreen(
+                    orderUiState = uiState,
+                    onSendButtonClicked = {subject: String, summary: String ->},
+                    onCancelButtonClicked = {navController.popBackStack(route = CupcakeScreen.Start.name, inclusive = false)},
+                    modifier = Modifier.fillMaxHeight()
+                )
+            }
         }
     }
 }
