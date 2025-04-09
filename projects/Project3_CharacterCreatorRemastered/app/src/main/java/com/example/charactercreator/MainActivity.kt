@@ -1,18 +1,10 @@
 package com.example.charactercreator
 
-
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -22,9 +14,11 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.TextField
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -32,6 +26,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.charactercreator.ui.theme.CharacterCreatorTheme
+import com.example.charactercreator.data.loadCharacters
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.compose.runtime.collectAsState
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -51,22 +48,24 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CharacterCreatorApp(modifier: Modifier = Modifier) {
-    //val useMap = true
+fun CharacterCreatorApp(modifier: Modifier = Modifier, viewModel: CharacterCreatorViewModel = viewModel()) {
+    // Collect the stats and use collectAsState() to make it observe changes
+    val uiState by viewModel.uiState.collectAsState()
+    val stats = uiState.stats
+    val baseStats = viewModel.baseStats.value
     val MAX_STATS = 25
-    //var (statArray, setStatArray) = remember { mutableStateOf(Array<Int>(size = 4, init = { 0 })) }
-    var (statMap, setStatMap) = remember {
-        (mutableStateOf(
-            mutableMapOf(
-                "Stamina" to 0,
-                "Strength" to 0,
-                "Agility" to 0,
-                "Intellect" to 0,
-            )
-        ))
+
+    // Load characters and their base stats
+    val characters = loadCharacters()
+    var selectedCharacter by remember { mutableStateOf("Warrior") }
+    var expanded by remember { mutableStateOf(false) }
+
+    // Set base stats for the selected character
+    LaunchedEffect(selectedCharacter) {
+        viewModel.setBaseStats(characters[selectedCharacter] ?: mapOf())
     }
-    //var statList = mutableListOf(0, 0, 0, 0)
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -77,6 +76,41 @@ fun CharacterCreatorApp(modifier: Modifier = Modifier) {
             text = "Character Creator", fontSize = 36.sp,
             modifier = Modifier.padding(bottom = 64.dp)
         )
+
+        // Character Selection Dropdown
+        ExposedDropdownMenuBox(
+            expanded = expanded,
+            onExpandedChange = { expanded = it }
+        ) {
+            TextField(
+                value = selectedCharacter,
+                onValueChange = {},
+                readOnly = true,
+                label = { Text("Select Character") },
+                modifier = Modifier
+                    .menuAnchor()
+                    .fillMaxWidth()
+                    .padding(horizontal = 64.dp)
+            )
+            ExposedDropdownMenu(
+                expanded = expanded,
+                onDismissRequest = { expanded = false }
+            ) {
+                loadCharacters().keys.forEach { char ->
+                    DropdownMenuItem(
+                        text = { Text(char) },
+                        onClick = {
+                            selectedCharacter = char
+                            // Set the base stats for the selected character
+                            viewModel.setBaseStats(characters[char] ?: mapOf())
+                            expanded = false
+                        }
+                    )
+                }
+            }
+        }
+
+        // Display Stat Controls
         Row(
             horizontalArrangement = Arrangement.Start,
             modifier = Modifier
@@ -88,19 +122,25 @@ fun CharacterCreatorApp(modifier: Modifier = Modifier) {
                 horizontalArrangement = Arrangement.spacedBy(0.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                items(statMap.keys.toList())
-                { stat ->
+                items(stats.keys.toList()) { stat ->
                     StatButtons(
                         statName = stat,
-                        value = statMap[stat].toString(),
+                        value = stats[stat].toString(),
                         onPlusClick = {
-                            if (statMap.values.sum() < MAX_STATS) {
-                                setStatMap((statMap + (stat to statMap[stat]?.plus(1))) as HashMap<String, Int>)
+                            println("Attempting to increase $stat")
+                            if (stats.values.sum() < MAX_STATS) {
+                                val newStatValue = stats[stat]?.plus(1) ?: 0
+                                viewModel.updateStat(stat, newStatValue)
+                                println("New value for $stat: $newStatValue")
                             }
                         },
                         onMinusClick = {
-                            if (statMap.getOrDefault(stat, 0) > 0) {
-                                setStatMap((statMap + (stat to statMap[stat]?.minus(1))) as HashMap<String, Int>)
+                            println("Attempting to decrease $stat")
+                            val baseStat = baseStats[stat] ?: 0
+                            if (stats.getOrDefault(stat, 0) > baseStat) {
+                                val newStatValue = stats[stat]?.minus(1) ?: 0
+                                viewModel.updateStat(stat, newStatValue)
+                                println("New value for $stat: $newStatValue")
                             }
                         },
                     )
@@ -109,9 +149,9 @@ fun CharacterCreatorApp(modifier: Modifier = Modifier) {
         }
 
         Spacer(Modifier.padding(vertical = 8.dp))
-        Text(text = "Points remaining: ${MAX_STATS - statMap.values.sum()}/${MAX_STATS}")
+        Text(text = "Points remaining: ${MAX_STATS - stats.values.sum()}/${MAX_STATS}")
         Spacer(Modifier.padding(vertical = 8.dp))
-        AttributeList(stats = statMap)
+        AttributeList(stats = stats)
     }
 }
 
@@ -141,18 +181,18 @@ fun AttributeList(
 private fun getAttributesFromStats(stats: Map<String, Int>): Map<String, Int> {
     return mapOf(
         "Hit points" to
-            2 * stats.getOrDefault("Stamina", 0) +
-                    stats.getOrDefault("Strength", 0),
+                2 * stats.getOrDefault("stamina", 0) +
+                stats.getOrDefault("strength", 0),
         "Health regeneration" to
-            2 * stats.getOrDefault("Stamina", 0) +
-                    (stats.getOrDefault("Strength", 0) +
-                            stats.getOrDefault("Agility", 0)),
+                2 * stats.getOrDefault("stamina", 0) +
+                (stats.getOrDefault("strength", 0) +
+                        stats.getOrDefault("agility", 0)),
         "Physical damage" to
-                2 * stats.getOrDefault("Strength", 0) +
-                    stats.getOrDefault("Agility", 0),
+                2 * stats.getOrDefault("strength", 0) +
+                stats.getOrDefault("agility", 0),
         "Magic damage" to
-            2 * stats.getOrDefault("Agility", 0) +
-                    stats.getOrDefault("Intellect", 0)
+                2 * stats.getOrDefault("agility", 0) +
+                stats.getOrDefault("intellect", 0)
     )
 }
 
@@ -164,32 +204,33 @@ fun StatButtons(
     onMinusClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-
     Column(
         modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally
-    )
-    {
-        // increment stat
+    ) {
+        // Debug: add a log to check if button is clicked
         Button(
-            onClick = onPlusClick,
+            onClick = {
+                println("Plus clicked for $statName")
+                onPlusClick()
+            },
         ) {
             Icon(
                 painter = painterResource(id = R.drawable.baseline_arrow_drop_up_24),
-                contentDescription = ""
+                contentDescription = "Increase $statName"
             )
         }
-        Text(
-            text = statName
-        )
 
-        Text(
-            text = value
-        )
-        Button(onClick = onMinusClick) {
+        Text(text = statName)
+        Text(text = value)
+
+        Button(onClick = {
+            println("Minus clicked for $statName")
+            onMinusClick()
+        }) {
             Icon(
                 painter = painterResource(id = R.drawable.baseline_arrow_drop_down_24),
-                contentDescription = ""
+                contentDescription = "Decrease $statName"
             )
         }
     }
