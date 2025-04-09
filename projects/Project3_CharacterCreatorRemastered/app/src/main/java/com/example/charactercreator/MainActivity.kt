@@ -51,13 +51,13 @@ class MainActivity : ComponentActivity() {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CharacterCreatorApp(modifier: Modifier = Modifier, viewModel: CharacterCreatorViewModel = viewModel()) {
-    // Collect the stats and use collectAsState() to make it observe changes
+    //collect stats from viewmodel
     val uiState by viewModel.uiState.collectAsState()
     val stats = uiState.stats
     val baseStats = viewModel.baseStats.value
-    val MAX_STATS = 25
+    val maxStats = 25
 
-    // Load characters and their base stats
+    // load in preset characters
     val characters = loadCharacters()
     var selectedCharacter by remember { mutableStateOf("Warrior") }
     var expanded by remember { mutableStateOf(false) }
@@ -77,7 +77,7 @@ fun CharacterCreatorApp(modifier: Modifier = Modifier, viewModel: CharacterCreat
             modifier = Modifier.padding(bottom = 64.dp)
         )
 
-        // Character Selection Dropdown
+        // new dropdown section
         ExposedDropdownMenuBox(
             expanded = expanded,
             onExpandedChange = { expanded = it }
@@ -101,8 +101,8 @@ fun CharacterCreatorApp(modifier: Modifier = Modifier, viewModel: CharacterCreat
                         text = { Text(char) },
                         onClick = {
                             selectedCharacter = char
-                            // Set the base stats for the selected character
-                            viewModel.setBaseStats(characters[char] ?: mapOf())
+                            //base stats for the premade characters (changed to be my own)
+                            viewModel.setBaseStats(characters[char] ?: mapOf()) // elvis operator!
                             expanded = false
                         }
                     )
@@ -110,7 +110,7 @@ fun CharacterCreatorApp(modifier: Modifier = Modifier, viewModel: CharacterCreat
             }
         }
 
-        // Display Stat Controls
+        //stats control
         Row(
             horizontalArrangement = Arrangement.Start,
             modifier = Modifier
@@ -128,7 +128,7 @@ fun CharacterCreatorApp(modifier: Modifier = Modifier, viewModel: CharacterCreat
                         value = stats[stat].toString(),
                         onPlusClick = {
                             println("Attempting to increase $stat")
-                            if (stats.values.sum() < MAX_STATS) {
+                            if (stats.values.sum() < maxStats) {
                                 val newStatValue = stats[stat]?.plus(1) ?: 0
                                 viewModel.updateStat(stat, newStatValue)
                                 println("New value for $stat: $newStatValue")
@@ -149,7 +149,7 @@ fun CharacterCreatorApp(modifier: Modifier = Modifier, viewModel: CharacterCreat
         }
 
         Spacer(Modifier.padding(vertical = 8.dp))
-        Text(text = "Points remaining: ${MAX_STATS - stats.values.sum()}/${MAX_STATS}")
+        Text(text = "Points remaining: ${maxStats - stats.values.sum()}/${maxStats}")
         Spacer(Modifier.padding(vertical = 8.dp))
         AttributeList(stats = stats)
     }
@@ -208,10 +208,9 @@ fun StatButtons(
         modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // Debug: add a log to check if button is clicked
         Button(
             onClick = {
-                println("Plus clicked for $statName")
+
                 onPlusClick()
             },
         ) {
@@ -225,7 +224,7 @@ fun StatButtons(
         Text(text = value)
 
         Button(onClick = {
-            println("Minus clicked for $statName")
+
             onMinusClick()
         }) {
             Icon(

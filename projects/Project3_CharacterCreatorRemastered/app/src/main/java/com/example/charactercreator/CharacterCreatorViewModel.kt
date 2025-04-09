@@ -12,11 +12,10 @@ class CharacterCreatorViewModel : ViewModel() {
     private val _uiState = MutableStateFlow(CharacterCreatorUiState())
     val uiState: StateFlow<CharacterCreatorUiState> = _uiState.asStateFlow()
 
-    // Keep backward compatibility with your existing code
     val stats = mutableStateOf(_uiState.value.stats)
     val baseStats = mutableStateOf(_uiState.value.stats)
 
-    // Method to update a specific stat
+    // udpates stats method
     fun updateStat(statName: String, value: Int) {
         val currentStats = _uiState.value.stats.toMutableMap()
         currentStats[statName] = value
@@ -24,21 +23,15 @@ class CharacterCreatorViewModel : ViewModel() {
         // Update both states
         _uiState.value = _uiState.value.copy(stats = currentStats)
         stats.value = currentStats
-
-        // Debug log
-        println("ViewModel updated $statName to $value, new stats: ${stats.value}")
     }
 
-    // Method to set the base stats when a new character is selected
+    //sets the base stats when new char is selected
     fun setBaseStats(newBaseStats: Map<String, Int>) {
         _uiState.value = _uiState.value.copy(stats = newBaseStats)
 
         // Update the mutable states for backward compatibility
         baseStats.value = newBaseStats
         stats.value = newBaseStats
-
-        // Debug log
-        println("Base stats set to: $newBaseStats")
     }
 
     init {
